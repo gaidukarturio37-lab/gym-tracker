@@ -1,7 +1,7 @@
 import sqlite3
 
 def get_connection():
-    # Простой и понятный путь
+    # Явный путь
     db_path = "C:/MyPythonProjects/gym_tracker/tracker.db"
     conn = sqlite3.connect(db_path)
     conn.execute("PRAGMA foreign_keys = ON;")
@@ -44,6 +44,12 @@ CREATE TABLE IF NOT EXISTS body_metrics (
     shoulder REAL,
     neck REAL
 );
+CREATE TABLE IF NOT EXISTS users (
+    user_id INTEGER PRIMARY KEY,
+    user_name TEXT UNIQUE,
+    join_key TEXT NOT NULL,
+    pin_code TEXT
+);                       
 """)
 connection.commit()
 connection.close()
