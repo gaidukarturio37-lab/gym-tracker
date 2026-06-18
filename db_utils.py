@@ -234,3 +234,22 @@ def change_body_metrics_entry(
     )
     connection.commit()
     connection.close()
+
+def get_user_id(username, pin_code):
+    connection = get_connection()
+    cursor = connection.cursor()
+    user_id = cursor.execute(
+        """SELECT user_id FROM users WHERE user_name = ? AND pin_code = ?""", (username, pin_code)
+    ).fetchone()
+    connection.close()
+    return user_id[0] if user_id else None
+
+def reg_new_user(username, pin_code, join_key):
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        """INSERT INTO users (user_name, pin_code) VALUES (?, ?) WHERE join_key = ?""", (username, pin_code, join_key)
+    )
+    connection.commit()
+    connection.close()
+    return get_user_id(username, pin_code)

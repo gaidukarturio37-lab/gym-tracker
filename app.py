@@ -14,17 +14,47 @@ from db_utils import (
     get_consumed_carbs,
     get_consumed_fat,
     get_products,
+    get_user_id,
     last_date,
     check_product_exists,
     add_food_entry,
+    reg_new_user,
 )
 from datetime import date, datetime
 from main import get_carbs_target, get_macros_targets
 
+
+if "user_id" not in st.session_state:
+    st.session_state.user_id = None
+with st.sidebar:
+    st.header("Вход")
+    username = st.text_input("Имя пользователя", value="user")
+    pin = st.text_input("Пароль", value="password")
+    if st.button("Войти"):
+        user_id = get_user_id(username, pin)
+        if user_id:
+            st.session_state.user_id = user_id
+            st.success("Успешный вход!")
+        else:
+            st.error("Неверные имя пользователя или пароль.")
+    st.write("---")
+    st.header("Регистрация")
+    new_username = st.text_input("Имя пользователя для регистрации", value="new_user")
+    new_pin = st.text_input("Пароль для регистрации", value="new_password")
+    access_code = st.text_input("Код доступа для регистрации", value="access123")
+    if st.button("Зарегистрироваться"):
+        user_id = reg_new_user(new_username, new_pin, access_code)
+        if user_id:
+            st.success("Пользователь успешно зарегистрирован!")
+        else:
+            st.error("Ошибка регистрации. Проверьте код доступа или имя пользователя.")
+if st.session_state.user_id is None:
+    st.warning("Пожалуйста, войдите в систему или зарегистрируйтесь.")
+    st.stop()
+u_id = st.session_state.user_id  # Используем user_id из сессии
+
 st.set_page_config(page_title="Мой Фитнес-Трекер", page_icon=":muscle:", layout="wide")
 st.title("📊 Мой фитнес-отчет")
-
-u_id = 1  # Временный user_id для всех операций. В будущем можно расширить до полноценной системы пользователей.
 
 # Получаем дату и данные из базы данных
 today = date.today().strftime("%Y-%m-%d")

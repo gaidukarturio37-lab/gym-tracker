@@ -9,7 +9,11 @@ conn.execute("PRAGMA foreign_keys = ON;")
 cursor = conn.cursor()
 
 
-cursor.execute("UPDATE body_metrics SET user_id = 1 WHERE user_id IS NULL;")
+cursor.execute("Select * from users")
+row = cursor.fetchone()
+while row:
+    print(row)
+    row = cursor.fetchone()
 
 conn.commit()
 conn.close()

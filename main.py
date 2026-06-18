@@ -1,3 +1,5 @@
+import streamlit as st
+
 from db_utils import (
     get_consumed_calories,
     get_consumed_protein,
@@ -12,22 +14,29 @@ from db_utils import (
     food_diary_check,
 )
 from datetime import datetime, date
-user_id = 1  # Временный user_id для всех операций. В будущем можно расширить до полноценной системы пользователей.
-# переменные для рассчсета калорийности:
-weight = (
-    get_weight(user_id)
-)  # средний вес за неделю, в идеале переписать функцию понедельно, а не за последние 7 дней
-activity_level = 1.3  # коэффициент активности, может быть изменен в зависимости от целей и уровня активности
-required_calories_per_day = (
-    (0.063 * weight + 2.8957) * 240
-) * activity_level  # необходимая калорийность
-deficit_percent = 19  # дефицит калорий в процентах
-deficit_calories = required_calories_per_day * (
-    deficit_percent / 100
-)  # дефицит калорий плоский
-avg_target_calories_per_day = (
-    required_calories_per_day - deficit_calories
-)  # целевая калорийность
+
+def main():
+    if 'user_id' not in st.session_state or st.session_state.user_id is None:
+        st.warning("Пожалуйста, войдите в систему или зарегистрируйтесь.")
+        st.stop()
+    else:
+        user_id = st.session_state.user_id  # Используем user_id из сессии
+    # переменные для рассчсета калорийности:
+    weight = (
+        get_weight(user_id)
+    )  # средний вес за неделю, в идеале переписать функцию понедельно, а не за последние 7 дней
+    activity_level = 1.3  # коэффициент активности, может быть изменен в зависимости от целей и уровня активности
+    required_calories_per_day = (
+        (0.063 * weight + 2.8957) * 240
+    ) * activity_level  # необходимая калорийность
+    deficit_percent = 19  # дефицит калорий в процентах
+    deficit_calories = required_calories_per_day * (
+        deficit_percent / 100
+    )  # дефицит калорий плоский
+    avg_target_calories_per_day = (
+        required_calories_per_day - deficit_calories
+    )  # целевая калорийность
+    return avg_target_calories_per_day, weight
 
 config = {
     1: {
@@ -58,13 +67,13 @@ config = {
         6: {'calories': 0.1432, 'protein': 2, 'fat': 0.7},}
 }
 
-last_entry_date = last_date(user_id)
-today = date.today().strftime("%Y-%m-%d")
+
 
 def get_macros_targets(macros, date_str, reg):  # РАССЧЕТ ЦЕЛЕВЫХ ПОКАЗАТЕЛЕЙ
     date_obj = datetime.strptime(date_str, "%Y-%m-%d")
     weekday = date_obj.weekday()  # 0 - понедельник, 6 - воскресенье
     day_data = config[reg][weekday]
+    avg_target_calories_per_day, weight= main()
     if macros == "calories":
         total_calories = avg_target_calories_per_day * 7
         return round(total_calories * day_data['calories'], -1)
