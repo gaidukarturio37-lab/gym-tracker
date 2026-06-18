@@ -2,13 +2,13 @@ import sqlite3
 from db_init import get_connection
 
 
-def get_consumed_calories(date):
+def get_consumed_calories(date, user_id):
     connection = get_connection()
     cursor = connection.cursor()
     consumed_calories = (
         cursor.execute(
-            """SELECT SUM(f.amount * p.calories / 100.0) FROM food_diary f JOIN products p ON f.product_id = p.product_id WHERE f.date = ?""",
-            (date,),
+            """SELECT SUM(f.amount * p.calories / 100.0) FROM food_diary f JOIN products p ON f.product_id = p.product_id WHERE f.date = ? AND f.user_id = ?""",
+            (date, user_id),
         ).fetchone()[0]
         or 0
     )
@@ -16,13 +16,13 @@ def get_consumed_calories(date):
     return consumed_calories
 
 
-def get_consumed_protein(date):
+def get_consumed_protein(date, user_id):
     connection = get_connection()
     cursor = connection.cursor()
     consumed_protein = (
         cursor.execute(
-            """SELECT SUM(f.amount * p.protein / 100.0) FROM food_diary f JOIN products p ON f.product_id = p.product_id WHERE f.date = ?""",
-            (date,),
+            """SELECT SUM(f.amount * p.protein / 100.0) FROM food_diary f JOIN products p ON f.product_id = p.product_id WHERE f.date = ? AND f.user_id = ?""",
+            (date, user_id),
         ).fetchone()[0]
         or 0
     )
@@ -30,13 +30,13 @@ def get_consumed_protein(date):
     return consumed_protein
 
 
-def get_consumed_fat(date):
+def get_consumed_fat(date, user_id):
     connection = get_connection()
     cursor = connection.cursor()
     consumed_fat = (
         cursor.execute(
-            """SELECT SUM(f.amount * p.fat / 100.0) FROM food_diary f JOIN products p ON f.product_id = p.product_id WHERE f.date = ?""",
-            (date,),
+            """SELECT SUM(f.amount * p.fat / 100.0) FROM food_diary f JOIN products p ON f.product_id = p.product_id WHERE f.date = ? AND f.user_id = ?""",
+            (date, user_id),
         ).fetchone()[0]
         or 0
     )
@@ -44,13 +44,13 @@ def get_consumed_fat(date):
     return consumed_fat
 
 
-def get_consumed_carbs(date):
+def get_consumed_carbs(date, user_id):
     connection = get_connection()
     cursor = connection.cursor()
     consumed_carbs = (
         cursor.execute(
-            """SELECT SUM(f.amount * p.carbs / 100.0) FROM food_diary f JOIN products p ON f.product_id = p.product_id WHERE f.date = ?""",
-            (date,),
+            """SELECT SUM(f.amount * p.carbs / 100.0) FROM food_diary f JOIN products p ON f.product_id = p.product_id WHERE f.date = ? AND f.user_id = ?""",
+            (date, user_id),
         ).fetchone()[0]
         or 0
     )
@@ -77,15 +77,15 @@ def get_weight(user_id):
     return weight
 
 
-def add_food_entry(date, product_name, amount):
+def add_food_entry(date, product_name, amount, user_id):
     connection = get_connection()
     cursor = connection.cursor()
     product_id = cursor.execute(
-        """SELECT product_id FROM products WHERE name = ?""", (product_name,)
+        """SELECT product_id FROM products WHERE name = ? and user_id = ?""", (product_name, user_id)
     ).fetchone()[0]
     cursor.execute(
-        """INSERT INTO food_diary (date, product_id, amount) VALUES (?, ?, ?)""",
-        (date, product_id, amount),
+        """INSERT INTO food_diary (date, product_id, amount, user_id) VALUES (?, ?, ?, ?)""",
+        (date, product_id, amount, user_id),
     )
     connection.commit()
     connection.close()
@@ -115,18 +115,7 @@ def add_product_entry(name, protein, fat, carbs, calories):
     connection.close()
 
 
-def delete_food_entry(date, product_name):
-    connection = get_connection()
-    cursor = connection.cursor()
-    product_id = cursor.execute(
-        """SELECT product_id FROM products WHERE name = ?""", (product_name,)
-    ).fetchone()[0]
-    cursor.execute(
-        """DELETE FROM food_diary WHERE date = ? AND product_id = ?""",
-        (date, product_id),
-    )
-    connection.commit()
-    connection.close()
+
 
 
 def add_body_metrics_entry(
@@ -172,22 +161,22 @@ def add_body_metrics_entry(
     connection.close()
 
 
-def food_diary_check(date):
+def food_diary_check(date, user_id):
     connection = get_connection()
     cursor = connection.cursor()
     entries = cursor.execute(
-        """SELECT f.food_id, p.name, f.amount, f.amount * p.calories / 100.0 AS calories, f.amount * p.protein / 100.0 AS protein, f.amount * p.fat / 100.0 AS fat, f.amount * p.carbs / 100.0 AS carbs FROM food_diary f JOIN products p ON f.product_id = p.product_id WHERE f.date = ?""",
-        (date,),
+        """SELECT f.food_id, p.name, f.amount, f.amount * p.calories / 100.0 AS calories, f.amount * p.protein / 100.0 AS protein, f.amount * p.fat / 100.0 AS fat, f.amount * p.carbs / 100.0 AS carbs FROM food_diary f JOIN products p ON f.product_id = p.product_id WHERE f.date = ? AND f.user_id = ?""",
+        (date, user_id),
     ).fetchall()
     connection.close()
     return entries
 
-def delete_food_entry_by_id(food_id):
+def delete_food_entry_by_id(food_id, user_id):
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute(
-        """DELETE FROM food_diary WHERE food_id = ?""",
-        (food_id,),
+        """DELETE FROM food_diary WHERE food_id = ? AND user_id = ?""",
+        (food_id, user_id),
     )
     connection.commit()
     connection.close()

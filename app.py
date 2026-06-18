@@ -59,24 +59,24 @@ if date_in_db < today:
     st.write(f"Данные за сегодня не найдены. Последние данные за {date_in_db}:")
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("Калории", f"{get_consumed_calories(date_in_db):.0f}")
+        st.metric("Калории", f"{get_consumed_calories(date_in_db, u_id):.0f}")
     with col2:
-        st.metric("Белки", f"{get_consumed_protein(date_in_db):.1f}")
+        st.metric("Белки", f"{get_consumed_protein(date_in_db, u_id):.1f}")
     with col3:
-        st.metric("Жиры", f"{get_consumed_fat(date_in_db):.1f}")
+        st.metric("Жиры", f"{get_consumed_fat(date_in_db, u_id):.1f}")
     with col4:
-        st.metric("Углеводы", f"{get_consumed_carbs(date_in_db):.1f}")
+        st.metric("Углеводы", f"{get_consumed_carbs(date_in_db, u_id):.1f}")
 else:
     st.write(f"Данные за сегодня: {today}")
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("Калории", f"{get_consumed_calories(today):.0f}")
+        st.metric("Калории", f"{get_consumed_calories(today, u_id):.0f}")
     with col2:
-        st.metric("Белки", f"{get_consumed_protein(today):.1f}")
+        st.metric("Белки", f"{get_consumed_protein(today, u_id):.1f}")
     with col3:
-        st.metric("Жиры", f"{get_consumed_fat(today):.1f}")
+        st.metric("Жиры", f"{get_consumed_fat(today, u_id):.1f}")
     with col4:
-        st.metric("Углеводы", f"{get_consumed_carbs(today):.1f}")
+        st.metric("Углеводы", f"{get_consumed_carbs(today, u_id):.1f}")
 
 
 st.write("---")
@@ -201,7 +201,7 @@ with tab2:
         submitted = st.form_submit_button("Добавить")
         if submitted:
             if product_name and check_product_exists(product_name):
-                add_food_entry(date_in_db, product_name, amount)
+                add_food_entry(date_in_db, product_name, amount, u_id)
                 st.success(f"Добавлено: {product_name} ({amount}г)")
             else:
                 st.error(f"Пожалуйста, выберите существующий продукт из списка.")
@@ -221,7 +221,7 @@ with tab3:
 with tab4:
     st.subheader("Дневник питания")
     st.write("Здесь отображается история вашего питания за последний день.")
-    data = food_diary_check(date_in_db if date_in_db < today else today)
+    data = food_diary_check(date_in_db if date_in_db < today else today, u_id)
     if data:
         for entry in data:
             entry_id, name, amount, calories, protein, fat, carbs = entry
@@ -231,7 +231,7 @@ with tab4:
                 f"**{name}** ({amount}г) | {calories:.0f} ккал | {protein:.0f} г белков | {fat:.0f} г жиров | {carbs:.0f} г углеводов"
             )
             if col2.button("Удалить", key=f"del_{entry_id}"):
-                delete_food_entry_by_id(entry_id)
+                delete_food_entry_by_id(entry_id, u_id)
                 st.success(f"Запись '{name}' удалена!")
                 st.rerun()
     else:
@@ -495,7 +495,7 @@ with tab8:
     )
     if food_date:
         df = pd.DataFrame(
-            food_diary_check(food_date),
+            food_diary_check(food_date, u_id),
             columns=[
                 "№ записи",
                 "Название продукта",
@@ -544,7 +544,7 @@ with tab9:
     st.metric("Общее количество углеводов:", f"{total_carbs:.2f}")
     if st.button("Сохранить всё в базу данных"):
         for item in st.session_state.menu_items:
-            add_food_entry(date_in_db, item["name"], item["weight"])
+            add_food_entry(date_in_db, item["name"], item["weight"], u_id)
         st.session_state.menu_items = []
         st.success("Меню сохранено в дневник питания!")
         st.rerun()

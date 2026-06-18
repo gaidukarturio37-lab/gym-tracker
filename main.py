@@ -9,7 +9,6 @@ from db_utils import (
     add_product_entry,
     get_weight,
     add_body_metrics_entry,
-    delete_food_entry,
     food_diary_check,
 )
 from datetime import datetime, date
