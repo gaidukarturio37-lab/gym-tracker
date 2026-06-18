@@ -58,19 +58,20 @@ def get_consumed_carbs(date):
     return consumed_carbs
 
 
-def last_date():
+def last_date(user_id):
     connection = get_connection()
     cursor = connection.cursor()
-    last_date = cursor.execute("""SELECT MAX(date) FROM body_metrics""").fetchone()[0]
+    last_date = cursor.execute("""SELECT MAX(date) FROM body_metrics WHERE user_id = ?""", (user_id,)).fetchone()[0]
     connection.close()
     return last_date
 
 
-def get_weight():
+def get_weight(user_id):
     connection = get_connection()
     cursor = connection.cursor()
     weight = cursor.execute(
-        """SELECT AVG(weight) FROM(SELECT weight FROM body_metrics ORDER BY date DESC LIMIT 7)""",
+        """SELECT AVG(weight) FROM(SELECT weight FROM body_metrics WHERE user_id = ? ORDER BY date DESC LIMIT 7)""",
+        (user_id,)
     ).fetchone()[0]
     connection.close()
     return weight
@@ -100,15 +101,7 @@ def check_product_exists(product_name):
     return product is not None
 
 
-def add_weight_entry(date, weight, fat_weight):
-    connection = get_connection()
-    cursor = connection.cursor()
-    cursor.execute(
-        """INSERT INTO body_metrics (date, weight, fat_weight) VALUES (?, ?, ?)""",
-        (date, weight, fat_weight),
-    )
-    connection.commit()
-    connection.close()
+
 
 
 def add_product_entry(name, protein, fat, carbs, calories):
@@ -151,11 +144,12 @@ def add_body_metrics_entry(
     arm,
     shoulder,
     neck,
+    user_id,
 ):
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute(
-        """INSERT INTO body_metrics (date, weight, fat_weight, lean_body_mass, body_fat_mass, body_fat_percentage, waist_clean, waist_dirty, hips, one_hip, chest, arm, shoulder, neck) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        """INSERT INTO body_metrics (date, weight, fat_weight, lean_body_mass, body_fat_mass, body_fat_percentage, waist_clean, waist_dirty, hips, one_hip, chest, arm, shoulder, neck, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         (
             date,
             weight,
@@ -171,6 +165,7 @@ def add_body_metrics_entry(
             arm,
             shoulder,
             neck,
+            user_id
         ),
     )
     connection.commit()
@@ -206,11 +201,11 @@ def get_products():
     connection.close()
     return products
 
-def get_body_metrics(period):
+def get_body_metrics(period, user_id):
     connection = get_connection()
     cursor = connection.cursor()
     metrics = cursor.execute(
-        """SELECT * FROM body_metrics ORDER BY date DESC LIMIT ?""", (period,)
+        """SELECT date, weight, fat_weight, lean_body_mass, body_fat_mass, body_fat_percentage, waist_clean, waist_dirty, hips, one_hip, chest, arm, shoulder, neck FROM body_metrics WHERE user_id = ? ORDER BY date DESC LIMIT ?""", (user_id, period)
     ).fetchall()
     connection.close()
     return metrics
@@ -240,12 +235,13 @@ def change_body_metrics_entry(
     arm,
     shoulder,
     neck,
+    user_id
 ):
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute(
-        """UPDATE body_metrics SET weight = ?, fat_weight = ?, lean_body_mass = ?, body_fat_mass = ?, body_fat_percentage = ?, waist_clean = ?, waist_dirty = ?, hips = ?, one_hip = ?, chest = ?, arm = ?, shoulder = ?, neck = ? WHERE date = ?""",
-        (weight, fat_weight, lean_body_mass, body_fat_mass, body_fat_percentage, waist_clean, waist_dirty, hips, one_hip, chest, arm, shoulder, neck, date),
+        """UPDATE body_metrics SET weight = ?, fat_weight = ?, lean_body_mass = ?, body_fat_mass = ?, body_fat_percentage = ?, waist_clean = ?, waist_dirty = ?, hips = ?, one_hip = ?, chest = ?, arm = ?, shoulder = ?, neck = ? WHERE date = ? AND user_id = ?""",
+        (weight, fat_weight, lean_body_mass, body_fat_mass, body_fat_percentage, waist_clean, waist_dirty, hips, one_hip, chest, arm, shoulder, neck, date, user_id),
     )
     connection.commit()
     connection.close()

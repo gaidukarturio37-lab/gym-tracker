@@ -24,9 +24,11 @@ from main import get_carbs_target, get_macros_targets
 st.set_page_config(page_title="Мой Фитнес-Трекер", page_icon=":muscle:", layout="wide")
 st.title("📊 Мой фитнес-отчет")
 
+u_id = 1  # Временный user_id для всех операций. В будущем можно расширить до полноценной системы пользователей.
+
 # Получаем дату и данные из базы данных
 today = date.today().strftime("%Y-%m-%d")
-date_in_db = last_date()
+date_in_db = last_date(u_id)
 
 all_products = {
     p[1]: {"protein": p[2], "fat": p[3], "carbs": p[4], "calories": p[5]}
@@ -181,6 +183,7 @@ with tab1:
                 arm,
                 shoulder,
                 neck,
+                u_id
             )
             st.success("Замеры добавлены!")
 with tab2:
@@ -237,7 +240,7 @@ with tab5:
     st.subheader("История замеров")
     st.write("Здесь отображается история ваших замеров тела.")
     period = st.slider("Выберите период (дней)", min_value=2, max_value=30, value=7)
-    metrics_data = get_body_metrics(period)
+    metrics_data = get_body_metrics(period, u_id)
     if metrics_data:
         df = pd.DataFrame(
             metrics_data,
@@ -370,10 +373,10 @@ with tab7:
                     st.success(f"Данные продукта '{new_name}' обновлены!")
     elif edit_option == "Замеры":
         metrics_date = st.selectbox(
-            "Выберите дату замеров для изменения:", [m[0] for m in get_body_metrics(30)]
+            "Выберите дату замеров для изменения:", [m[0] for m in get_body_metrics(30, u_id)]
         )
         if metrics_date:
-            metrics_data = next(m for m in get_body_metrics(30) if m[0] == metrics_date)
+            metrics_data = next(m for m in get_body_metrics(30, u_id) if m[0] == metrics_date)
             (
                 metrics_date,
                 weight,
@@ -480,6 +483,7 @@ with tab7:
                         new_arm,
                         new_shoulder,
                         new_neck,
+                        u_id
                     )
                     st.success(f"Данные замеров за {metrics_date} обновлены!")
 with tab8:
@@ -487,7 +491,7 @@ with tab8:
     st.write("Здесь отображается история вашего питания за выбранный период.")
     food_date = st.selectbox(
         "Выберите дату для просмотра истории питания:",
-        [m[0] for m in get_body_metrics(30)],
+        [m[0] for m in get_body_metrics(30, u_id)],
     )
     if food_date:
         df = pd.DataFrame(

@@ -5,7 +5,6 @@ from db_utils import (
     get_consumed_carbs,
     last_date,
     add_food_entry,
-    add_weight_entry,
     check_product_exists,
     add_product_entry,
     get_weight,
@@ -14,10 +13,10 @@ from db_utils import (
     food_diary_check,
 )
 from datetime import datetime, date
-
+user_id = 1  # Временный user_id для всех операций. В будущем можно расширить до полноценной системы пользователей.
 # переменные для рассчсета калорийности:
 weight = (
-    get_weight()
+    get_weight(user_id)
 )  # средний вес за неделю, в идеале переписать функцию понедельно, а не за последние 7 дней
 activity_level = 1.3  # коэффициент активности, может быть изменен в зависимости от целей и уровня активности
 required_calories_per_day = (
@@ -60,7 +59,7 @@ config = {
         6: {'calories': 0.1432, 'protein': 2, 'fat': 0.7},}
 }
 
-last_entry_date = last_date()
+last_entry_date = last_date(user_id)
 today = date.today().strftime("%Y-%m-%d")
 
 def get_macros_targets(macros, date_str, reg):  # РАССЧЕТ ЦЕЛЕВЫХ ПОКАЗАТЕЛЕЙ
