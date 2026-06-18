@@ -32,7 +32,7 @@ date_in_db = last_date(u_id)
 
 all_products = {
     p[1]: {"protein": p[2], "fat": p[3], "carbs": p[4], "calories": p[5]}
-    for p in get_products()
+    for p in get_products(u_id)
 }
 option = st.radio(
     "Выберите количество тренировок в неделю:",
@@ -189,7 +189,7 @@ with tab1:
 with tab2:
     st.subheader("Добавить еду")
     st.write("Внести съеденное")
-    products_list = [p[1] for p in get_products()]
+    products_list = [p[1] for p in get_products(u_id)]
     with st.form("add_food_form"):
         product_name = st.selectbox(
             "Выберите продукт",
@@ -200,7 +200,7 @@ with tab2:
         amount = st.number_input("Количество (г)", min_value=0)
         submitted = st.form_submit_button("Добавить")
         if submitted:
-            if product_name and check_product_exists(product_name):
+            if product_name and check_product_exists(product_name, u_id):
                 add_food_entry(date_in_db, product_name, amount, u_id)
                 st.success(f"Добавлено: {product_name} ({amount}г)")
             else:
@@ -216,7 +216,7 @@ with tab3:
         calories = st.number_input("Калории (на 100г)", min_value=0.0)
         submitted = st.form_submit_button("Добавить продукт")
         if submitted:
-            add_product_entry(name, protein, fat, carbs, calories)
+            add_product_entry(name, protein, fat, carbs, calories, u_id)
             st.success(f"Продукт '{name}' добавлен в базу данных!")
 with tab4:
     st.subheader("Дневник питания")
@@ -323,7 +323,7 @@ with tab5:
 with tab6:
     st.subheader("Список продуктов")
     st.write("Здесь отображается список всех продуктов в базе данных.")
-    products_data = get_products()
+    products_data = get_products(u_id)
     if products_data:
         df = pd.DataFrame(
             products_data,
@@ -343,10 +343,10 @@ with tab7:
     edit_option = st.selectbox("Выберите, что изменить:", ["Продукт", "Замеры"])
     if edit_option == "Продукт":
         product = st.selectbox(
-            "Выберите продукт для изменения:", [p[1] for p in get_products()]
+            "Выберите продукт для изменения:", [p[1] for p in get_products(u_id)]
         )
         if product:
-            product_data = next(p for p in get_products() if p[1] == product)
+            product_data = next(p for p in get_products(u_id) if p[1] == product)
             product_id, name, protein, fat, carbs, calories = product_data
             with st.form("edit_product_form"):
                 new_name = st.text_input("Название продукта", value=name)
@@ -369,6 +369,7 @@ with tab7:
                         new_fat,
                         new_carbs,
                         new_calories,
+                        u_id
                     )
                     st.success(f"Данные продукта '{new_name}' обновлены!")
     elif edit_option == "Замеры":
@@ -514,7 +515,7 @@ with tab9:
     )
     if "menu_items" not in st.session_state:
         st.session_state.menu_items = []
-    products_name = st.selectbox("Выберите продукт", [p[1] for p in get_products()])
+    products_name = st.selectbox("Выберите продукт", [p[1] for p in get_products(u_id)])
     add_button = st.button("Добавить в меню")
     if add_button and products_name:
         st.session_state.menu_items.append({"name": products_name, "weight": 100})

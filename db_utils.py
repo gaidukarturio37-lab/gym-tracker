@@ -91,11 +91,11 @@ def add_food_entry(date, product_name, amount, user_id):
     connection.close()
 
 
-def check_product_exists(product_name):
+def check_product_exists(product_name, user_id):
     connection = get_connection()
     cursor = connection.cursor()
     product = cursor.execute(
-        """SELECT product_id FROM products WHERE name = ?""", (product_name,)
+        """SELECT product_id FROM products WHERE name = ? and user_id = ?""", (product_name, user_id)
     ).fetchone()
     connection.close()
     return product is not None
@@ -104,12 +104,12 @@ def check_product_exists(product_name):
 
 
 
-def add_product_entry(name, protein, fat, carbs, calories):
+def add_product_entry(name, protein, fat, carbs, calories, user_id):
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute(
-        """INSERT INTO products (name, protein, fat, carbs, calories) VALUES (?, ?, ?, ?, ?)""",
-        (name, protein, fat, carbs, calories),
+        """INSERT INTO products (name, protein, fat, carbs, calories, user_id) VALUES (?, ?, ?, ?, ?, ?)""",
+        (name, protein, fat, carbs, calories, user_id),
     )
     connection.commit()
     connection.close()
@@ -181,11 +181,11 @@ def delete_food_entry_by_id(food_id, user_id):
     connection.commit()
     connection.close()
 
-def get_products():
+def get_products(user_id):
     connection = get_connection()
     cursor = connection.cursor()
     products = cursor.execute(
-        """SELECT * FROM products"""
+        """SELECT product_id, name, protein, fat, carbs, calories FROM products WHERE user_id = ?""", (user_id,)
     ).fetchall()
     connection.close()
     return products
@@ -199,12 +199,12 @@ def get_body_metrics(period, user_id):
     connection.close()
     return metrics
 
-def change_product_entry(product_id, name, protein, fat, carbs, calories):
+def change_product_entry(product_id, name, protein, fat, carbs, calories, user_id):
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute(
-        """UPDATE products SET name = ?, protein = ?, fat = ?, carbs = ?, calories = ? WHERE product_id = ?""",
-        (name, protein, fat, carbs, calories, product_id),
+        """UPDATE products SET name = ?, protein = ?, fat = ?, carbs = ?, calories = ? WHERE product_id = ? AND user_id = ?""",
+        (name, protein, fat, carbs, calories, product_id, user_id),
     )
     connection.commit()
     connection.close()
