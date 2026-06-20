@@ -4,54 +4,10 @@ from sqlalchemy import create_engine
 def get_connection():
     # Явный путь
     db_url = st.secrets["db_url"]
-    engine = create_engine(db_url)
+    engine = create_engine(db_url,
+    pool_pre_ping=True,      
+    pool_recycle=300,        # пересоздает соединение каждые 5 минут
+    pool_size=5,             # держит небольшое количество соединений
+    max_overflow=0)
     return engine
 
-engine = get_connection()
-
-
-with engine.raw_connection() as connection:
-    cursor = connection.cursor()
-    connection.executescript("""
-    PRAGMA foreign_keys = ON;
-    CREATE TABLE IF NOT EXISTS products (
-        product_id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
-        protein REAL,
-        fat REAL,
-        carbs REAL,
-        calories REAL
-    );
-    CREATE TABLE IF NOT EXISTS food_diary (
-        food_id INTEGER PRIMARY KEY,
-        date TEXT NOT NULL,
-        product_id INTEGER,
-        amount REAL,
-        FOREIGN KEY (date) REFERENCES body_metrics (date) ON DELETE RESTRICT,
-        FOREIGN KEY (product_id) REFERENCES products (product_id) ON DELETE RESTRICT
-    );
-    CREATE TABLE IF NOT EXISTS body_metrics (
-        date TEXT NOT NULL PRIMARY KEY,
-        weight REAL,
-        fat_weight REAL,
-        lean_body_mass REAL,
-        body_fat_mass REAL,
-        body_fat_percentage REAL,
-        waist_clean REAL,
-        waist_dirty REAL,
-        hips REAL,
-        one_hip REAL,
-        chest REAL,
-        arm REAL,
-        shoulder REAL,
-        neck REAL
-    );
-    CREATE TABLE IF NOT EXISTS users (
-        user_id INTEGER PRIMARY KEY,
-        user_name TEXT UNIQUE,
-        join_key TEXT NOT NULL,
-        pin_code TEXT
-    );                       
-    """)
-    connection.commit()
-    connection.close()
