@@ -1,11 +1,12 @@
-import sqlite3
+import streamlit as st
+from sqlalchemy import create_engine
 
 def get_connection():
     # Явный путь
-    db_path = "C:/MyPythonProjects/gym_tracker/tracker.db"
-    conn = sqlite3.connect(db_path)
-    conn.execute("PRAGMA foreign_keys = ON;")
-    return conn
+    db_url = st.secrets["db_url"]
+    engine = create_engine(db_url)
+    return engine
+
 
 
 connection = get_connection()
