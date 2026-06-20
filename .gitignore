@@ -1,2 +1,8 @@
 tracker.db
 .streamlit/secrets.toml
+__pycache__
+.streamlit
+venv
+test.py
+run_gym.bat
+fill_db.py
