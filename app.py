@@ -65,7 +65,7 @@ all_products = {
     for p in get_products(u_id)
 }
 option = st.radio(
-    "Выберите количество тренировок в неделю:",
+    "Выберите цикличность диеты:",
     ("3-х дневная", "4-х дневная", "Равномерная"),
     horizontal=True,
 )
@@ -129,7 +129,7 @@ with tab1:
     st.write("Здесь вы можете добавить свои замеры тела, такие как вес, объемы и т.д.")
     with st.form("add_metrics_form"):
         weight = st.number_input("Вес (кг)", min_value=0.0)
-        fat_weight = st.number_input("Вес жира (кг)", min_value=0.0)
+        fat_weight = st.number_input("Вес жира (кг)", min_value=0.0, value=None, placeholder="Оставьте пустым, если не замеряли")
         lean_body_mass = st.number_input(
             "Мышечная масса (кг)",
             min_value=0.0,
@@ -291,7 +291,7 @@ with tab5:
                 "Шея (см)",
             ],
         )
-        col1, col2 = st.columns(2)
+        col1, col2 = st.columns(2) #Вес и средний вес за период
         with col1:
             df["Дата"] = pd.to_datetime(df["Дата"])
             delta_weight = df["Вес (кг)"].iloc[0] - df["Вес (кг)"].iloc[-1]
@@ -308,47 +308,49 @@ with tab5:
             df, x="Дата", y="Вес (кг)", markers=True, template="plotly_dark"
         )
         fig_weight.update_xaxes(dtick="D1", tickformat="%Y-%m-%d")
-        st.plotly_chart(fig_weight, use_container_width=True)
-        col1, col2 = st.columns(2)
-        with col1:
-            df["Дата"] = pd.to_datetime(df["Дата"])
-            delta_weight = df["Вес жира (кг)"].iloc[0] - df["Вес жира (кг)"].iloc[-1]
+        st.plotly_chart(fig_weight, width='stretch')
+        df_fat_weight = df.dropna(subset=["Вес жира (кг)"]) #Вес жира график и дельта
+        if not df_fat_weight.empty:
+            col1, col2 = st.columns(2) 
+            with col1:
+                df["Дата"] = pd.to_datetime(df["Дата"])
+                delta_weight = df["Вес жира (кг)"].iloc[0] - df["Вес жира (кг)"].iloc[-1]
+                st.metric(
+                    "Вес жира",
+                    f"{df['Вес жира (кг)'].iloc[0]} кг",
+                    delta=f"{delta_weight:+.1f} кг",
+                    delta_color="inverse",
+                )
+            with col2:
+                st.metric("Средний вес за период", f"{df['Вес жира (кг)'].mean():.1f} кг")
+            st.write("График изменения веса жира:")
+            fig_weight = px.line(
+                df, x="Дата", y="Вес жира (кг)", markers=True, template="plotly_dark"
+            )
+            fig_weight.update_xaxes(dtick="D1", tickformat="%Y-%m-%d")
+            st.plotly_chart(fig_weight, width='stretch')
+        df_waist = df.dropna(subset=["Талия (грязная, см)"]) #Талия (грязная, см) график и дельта
+        if not df_waist.empty:
+            delta_waist = (
+                df_waist["Талия (грязная, см)"].iloc[0]
+                - df_waist["Талия (грязная, см)"].iloc[-1]
+            )
             st.metric(
-                "Вес жира",
-                f"{df['Вес жира (кг)'].iloc[0]} кг",
-                delta=f"{delta_weight:+.1f} кг",
+                "Талия",
+                f"{df_waist['Талия (грязная, см)'].iloc[0]} см",
+                delta=f"{delta_waist:+.1f} см",
                 delta_color="inverse",
             )
-        with col2:
-            st.metric("Средний вес за период", f"{df['Вес жира (кг)'].mean():.1f} кг")
-        st.write("График изменения веса жира:")
-        fig_weight = px.line(
-            df, x="Дата", y="Вес жира (кг)", markers=True, template="plotly_dark"
-        )
-        fig_weight.update_xaxes(dtick="D1", tickformat="%Y-%m-%d")
-        st.plotly_chart(fig_weight, use_container_width=True)
-        df_waist = df.dropna(subset=["Талия (грязная, см)"])
-        delta_waist = (
-            df_waist["Талия (грязная, см)"].iloc[0]
-            - df_waist["Талия (грязная, см)"].iloc[-1]
-        )
-        st.metric(
-            "Талия",
-            f"{df_waist['Талия (грязная, см)'].iloc[0]} см",
-            delta=f"{delta_waist:+.1f} см",
-            delta_color="inverse",
-        )
-        st.write("График изменения талии:")
-        if not df_waist.empty:
+            st.write("График изменения талии:")
             fig_waist = px.line(
-                df_waist,
-                x="Дата",
-                y="Талия (грязная, см)",
-                markers=True,
-                template="plotly_dark",
-            )
+                    df_waist,
+                    x="Дата",
+                    y="Талия (грязная, см)",
+                    markers=True,
+                    template="plotly_dark",
+                )
             fig_waist.update_xaxes(dtick="D1", tickformat="%Y-%m-%d")
-        st.plotly_chart(fig_waist, use_container_width=True)
+            st.plotly_chart(fig_waist, width='stretch')
         st.dataframe(df)
 with tab6:
     st.subheader("Список продуктов")
