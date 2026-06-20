@@ -57,7 +57,7 @@ st.set_page_config(page_title="Мой Фитнес-Трекер", page_icon=":mu
 st.title("📊 Мой фитнес-отчет")
 
 # Получаем дату и данные из базы данных
-today = date.today().strftime("%Y-%m-%d")
+today = date.today()
 date_in_db = last_date(u_id)
 
 all_products = {
@@ -81,7 +81,6 @@ if option in option_mapping:
         st.metric("Жиры", f"{get_macros_targets('fat', date_in_db, option_mapping[option]):.1f}")
     with col4:
         st.metric("Углеводы", f"{get_carbs_target(date_in_db, option_mapping[option]):.1f}")
-
 
 st.write("---")
 

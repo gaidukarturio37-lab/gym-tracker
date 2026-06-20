@@ -69,8 +69,14 @@ config = {
 
 
 
+
 def get_macros_targets(macros, date_str, reg):  # РАССЧЕТ ЦЕЛЕВЫХ ПОКАЗАТЕЛЕЙ
-    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+    if isinstance(date_str, str):
+        date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+    elif isinstance(date_str, (date, datetime)):
+        date_obj = date_str
+    else:
+        raise ValueError("Invalid date format. Please provide a string in 'YYYY-MM-DD' format or a date object.")
     weekday = date_obj.weekday()  # 0 - понедельник, 6 - воскресенье
     day_data = config[reg][weekday]
     avg_target_calories_per_day, weight= main()
