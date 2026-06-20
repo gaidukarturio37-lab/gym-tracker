@@ -1,5 +1,12 @@
 from db_init import get_connection
 engine = get_connection()
+from sqlalchemy import text
+
+def execute_query(query, params=None):
+    with engine.connect() as connection:
+        result = connection.execute(text(query), params or {})
+        connection.commit()
+        return result
 
 def get_consumed_calories(date, user_id):
     with engine.raw_connection() as connection:
@@ -235,20 +242,11 @@ def change_body_metrics_entry(
         connection.close()
 
 def get_user_id(username, pin_code):
-    with engine.raw_connection() as connection:
-        cursor = connection.cursor()
-        user_id = cursor.execute(
-            """SELECT user_id FROM users WHERE user_name = ? AND pin_code = ?""", (username, pin_code)
-        ).fetchone()
-        connection.close()
-        return user_id[0] if user_id else None
+    query = "SELECT user_id FROM users WHERE user_name = :u AND pin_code = :p"
+    user_id = execute_query(query, {"u": username, "p": pin_code}).fetchone()
+    return user_id[0] if user_id else None
 
 def reg_new_user(username, pin_code, join_key):
-    with engine.raw_connection() as connection:
-        cursor = connection.cursor()
-        cursor.execute(
-            """INSERT INTO users (user_name, pin_code) VALUES (?, ?) WHERE join_key = ?""", (username, pin_code, join_key)
-        )
-        connection.commit()
-        connection.close()
-        return get_user_id(username, pin_code)
+    query = "UPDATE users SET user_name = :u, pin_code = :p WHERE join_key = :j AND user_name IS NULL AND pin_code IS NULL"
+    res = execute_query(query, {"u": username, "p": pin_code, "j": join_key})
+    return get_user_id(username, pin_code)
