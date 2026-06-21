@@ -111,7 +111,7 @@ def add_body_metrics_entry(
             "user_id": user_id
         })
 
-@st.cache_data(ttl=3600)
+
 def food_diary_check(date, user_id):
         query = "SELECT f.food_id, p.name, f.amount, f.amount * p.calories / 100.0 AS calories, f.amount * p.protein / 100.0 AS protein, f.amount * p.fat / 100.0 AS fat, f.amount * p.carbs / 100.0 AS carbs FROM food_diary f JOIN products p ON f.product_id = p.product_id WHERE f.date = :date AND f.user_id = :user_id"
         entries = execute_query(query, {"date": date, "user_id": user_id}).fetchall()
