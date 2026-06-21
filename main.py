@@ -15,6 +15,7 @@ from db_utils import (
 )
 from datetime import datetime, date
 
+@st.cache_data
 def main():
     if 'user_id' not in st.session_state or st.session_state.user_id is None:
         st.warning("Пожалуйста, войдите в систему или зарегистрируйтесь.")
@@ -69,7 +70,7 @@ config = {
 
 
 
-
+@st.cache_data
 def get_macros_targets(macros, date_str, reg):  # РАССЧЕТ ЦЕЛЕВЫХ ПОКАЗАТЕЛЕЙ
     if isinstance(date_str, str):
         date_obj = datetime.strptime(date_str, "%Y-%m-%d")
@@ -85,6 +86,7 @@ def get_macros_targets(macros, date_str, reg):  # РАССЧЕТ ЦЕЛЕВЫХ 
         return round(total_calories * day_data['calories'], -1)
     return day_data[macros] * weight  # для белков и жиров, умножаем на вес
 
+@st.cache_data
 def get_carbs_target(date_str, reg):
     prot = get_macros_targets("protein", date_str, reg)
     fat = get_macros_targets("fat", date_str, reg)
