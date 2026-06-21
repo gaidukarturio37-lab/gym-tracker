@@ -428,74 +428,74 @@ with tab7:
             with st.form("edit_metrics_form"):
                 new_weight = st.number_input("Вес (кг)", min_value=0.0, value=weight)
                 new_fat_weight = st.number_input(
-                    "Вес жира (кг)", min_value=0.0, value=fat_weight
+                    "Вес жира (кг)", min_value=0.0, value=fat_weight if fat_weight is not None else None, placeholder="Оставьте пустым, если не замеряли"
                 )
                 new_lean_body_mass = st.number_input(
                     "Мышечная масса (кг)",
                     min_value=0.0,
-                    value=lean_body_mass if lean_body_mass is not None else 0.0,
+                    value=lean_body_mass if lean_body_mass is not None else None,
                     placeholder="Оставьте пустым, если не замеряли",
                 )
                 new_body_fat_mass = st.number_input(
                     "Масса жира (кг)",
                     min_value=0.0,
-                    value=body_fat_mass if body_fat_mass is not None else 0.0,
+                    value=body_fat_mass if body_fat_mass is not None else None,
                     placeholder="Оставьте пустым, если не замеряли",
                 )
                 new_body_fat_percentage = st.number_input(
                     "Процент жира (%)",
                     min_value=0.0,
                     value=(
-                        body_fat_percentage if body_fat_percentage is not None else 0.0
+                        body_fat_percentage if body_fat_percentage is not None else None
                     ),
                     placeholder="Оставьте пустым, если не замеряли",
                 )
                 new_waist_clean = st.number_input(
                     "Талия (чистая, см)",
                     min_value=0.0,
-                    value=waist_clean if waist_clean is not None else 0.0,
+                    value=waist_clean if waist_clean is not None else None,
                     placeholder="Оставьте пустым, если не замеряли",
                 )
                 new_waist_dirty = st.number_input(
                     "Талия (грязная, см)",
                     min_value=0.0,
-                    value=waist_dirty if waist_dirty is not None else 0.0,
+                    value=waist_dirty if waist_dirty is not None else None,
                     placeholder="Оставьте пустым, если не замеряли",
                 )
                 new_hips = st.number_input(
                     "Бедра (см)",
                     min_value=0.0,
-                    value=hips if hips is not None else 0.0,
+                    value=hips if hips is not None else None,
                     placeholder="Оставьте пустым, если не замеряли",
                 )
                 new_one_hip = st.number_input(
                     "Бедро (см)",
                     min_value=0.0,
-                    value=one_hip if one_hip is not None else 0.0,
+                    value=one_hip if one_hip is not None else None,
                     placeholder="Оставьте пустым, если не замеряли",
                 )
                 new_chest = st.number_input(
                     "Грудь (см)",
                     min_value=0.0,
-                    value=chest if chest is not None else 0.0,
+                    value=chest if chest is not None else None,
                     placeholder="Оставьте пустым, если не замеряли",
                 )
                 new_arm = st.number_input(
                     "Рука (см)",
                     min_value=0.0,
-                    value=arm if arm is not None else 0.0,
+                    value=arm if arm is not None else None,
                     placeholder="Оставьте пустым, если не замеряли",
                 )
                 new_shoulder = st.number_input(
                     "Плечи (см)",
                     min_value=0.0,
-                    value=shoulder if shoulder is not None else 0.0,
+                    value=shoulder if shoulder is not None else None,
                     placeholder="Оставьте пустым, если не замеряли",
                 )
                 new_neck = st.number_input(
                     "Шея (см)",
                     min_value=0.0,
-                    value=neck if neck is not None else 0.0,
+                    value=neck if neck is not None else None,
                     placeholder="Оставьте пустым, если не замеряли",
                 )
                 submitted = st.form_submit_button("Сохранить изменения")
