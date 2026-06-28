@@ -26,7 +26,7 @@ Visualization: Plotly
 
 Language: Python 3.12+
 
-📦 Setup & Installation
+###📦 Setup & Installation
 
 Follow these steps to get the project running on your machine:
 
@@ -51,7 +51,7 @@ Follow these steps to get the project running on your machine:
     source .venv/bin/activate
 
 3. Install dependencies:
-
+    ```bash
     pip install -r requirements.txt
 
 4. Configuration:
@@ -59,7 +59,7 @@ Follow these steps to get the project running on your machine:
 This application uses Streamlit's secrets management. To run the app locally, create a file named .streamlit/secrets.toml in your project root directory and add your Supabase credentials:
 
     SUPABASE_URL = "your_url_here"
-    
+
     SUPABASE_KEY = "your_key_here"
 
 5. Run the application:
