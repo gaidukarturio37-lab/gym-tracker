@@ -16,7 +16,7 @@ from db_utils import (
 from datetime import datetime, date
 
 @st.cache_data
-def main():
+def main(reg):
     if 'user_id' not in st.session_state or st.session_state.user_id is None:
         st.warning("Пожалуйста, войдите в систему или зарегистрируйтесь.")
         st.stop()
@@ -30,7 +30,10 @@ def main():
     required_calories_per_day = (
         (0.063 * weight + 2.8957) * 240
     ) * activity_level  # необходимая калорийность
-    deficit_percent = 19  # дефицит калорий в процентах
+    if reg == 4:  # если выбрана поддерживающая диета, то дефицит калорий не нужен
+        deficit_percent = 0
+    else:
+        deficit_percent = 19  # дефицит калорий в процентах
     deficit_calories = required_calories_per_day * (
         deficit_percent / 100
     )  # дефицит калорий плоский
@@ -65,7 +68,15 @@ config = {
         3: {'calories': 0.1428, 'protein': 2, 'fat': 0.7},
         4: {'calories': 0.1428, 'protein': 2, 'fat': 0.7},
         5: {'calories': 0.1428, 'protein': 2, 'fat': 0.7},
-        6: {'calories': 0.1432, 'protein': 2, 'fat': 0.7},}
+        6: {'calories': 0.1432, 'protein': 2, 'fat': 0.7},},
+    4: {
+        0: {'calories': 0.1428, 'protein': 1.8, 'fat': 1.0},
+        1: {'calories': 0.1428, 'protein': 1.8, 'fat': 1.0},
+        2: {'calories': 0.1428, 'protein': 1.8, 'fat': 1.0},
+        3: {'calories': 0.1428, 'protein': 1.8, 'fat': 1.0},
+        4: {'calories': 0.1428, 'protein': 1.8, 'fat': 1.0},
+        5: {'calories': 0.1428, 'protein': 1.8, 'fat': 1.0},
+        6: {'calories': 0.1432, 'protein': 1.8, 'fat': 1.0},}
 }
 
 
@@ -80,7 +91,7 @@ def get_macros_targets(macros, date_str, reg):  # РАССЧЕТ ЦЕЛЕВЫХ 
         raise ValueError("Invalid date format. Please provide a string in 'YYYY-MM-DD' format or a date object.")
     weekday = date_obj.weekday()  # 0 - понедельник, 6 - воскресенье
     day_data = config[reg][weekday]
-    avg_target_calories_per_day, weight= main()
+    avg_target_calories_per_day, weight = main(reg)
     if macros == "calories":
         total_calories = avg_target_calories_per_day * 7
         return round(total_calories * day_data['calories'], -1)

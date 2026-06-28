@@ -38,7 +38,7 @@ def get_consumed_carbs(date, user_id):
 
 
 
-@st.cache_data(ttl=3600)
+
 def last_date(user_id):
         query = "SELECT MAX(date) FROM body_metrics WHERE user_id = :user_id"
         last_date = execute_query(query, {"user_id": user_id}).fetchone()[0]
