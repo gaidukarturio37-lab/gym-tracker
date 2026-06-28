@@ -247,6 +247,7 @@ with tab3:
         if submitted:
             add_product_entry(name, protein, fat, carbs, calories, u_id)
             st.success(f"Продукт '{name}' добавлен в базу данных!")
+            st.cache_data.clear()
 with tab4:
     st.subheader("Дневник питания")
     st.write("Здесь отображается история вашего питания за последний день.")
@@ -581,4 +582,5 @@ with tab9:
             add_food_entry(date_in_db, item["name"], item["weight"], u_id)
         st.session_state.menu_items = []
         st.success("Меню сохранено в дневник питания!")
+        st.cache_data.clear()
         st.rerun()
