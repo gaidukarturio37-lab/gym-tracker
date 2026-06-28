@@ -57,7 +57,7 @@ Follow these steps to get the project running on your machine:
 4. Configuration:
 
 This application uses Streamlit's secrets management. To run the app locally, create a file named .streamlit/secrets.toml in your project root directory and add your Supabase credentials:
-    ```bash
+
     SUPABASE_URL = "your_url_here"
 
     SUPABASE_KEY = "your_key_here"
