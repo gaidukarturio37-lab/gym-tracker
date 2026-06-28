@@ -26,26 +26,26 @@ Visualization: Plotly
 
 Language: Python 3.12+
 
-###📦 Setup & Installation
+📦 Setup & Installation
 
 Follow these steps to get the project running on your machine:
 
 1. Clone the repository:
-
+    ```bash
     git clone https://github.com/gaidukarturio37-lab/gym-tracker.git
 
     cd gym-tracker
 
 2. Create a virtual environment:
 
-    Windows
-
+    #Windows
+    ```bash
     python -m venv .venv
 
     .venv\Scripts\activate
 
-    macOS/Linux
-
+    #macOS/Linux
+    ```bash
     python3 -m venv .venv
 
     source .venv/bin/activate
@@ -63,7 +63,7 @@ This application uses Streamlit's secrets management. To run the app locally, cr
     SUPABASE_KEY = "your_key_here"
 
 5. Run the application:
-
+    ```bash
     streamlit run main.py
 
 📈 Roadmap (Future Improvements)
