@@ -37,15 +37,15 @@ Follow these steps to get the project running on your machine:
     cd gym-tracker
 
 2. Create a virtual environment:
-
-    #Windows
     ```bash
+    #Windows
+    
     python -m venv .venv
 
     .venv\Scripts\activate
 
     #macOS/Linux
-    ```bash
+    
     python3 -m venv .venv
 
     source .venv/bin/activate
@@ -57,7 +57,7 @@ Follow these steps to get the project running on your machine:
 4. Configuration:
 
 This application uses Streamlit's secrets management. To run the app locally, create a file named .streamlit/secrets.toml in your project root directory and add your Supabase credentials:
-
+    ```bash
     SUPABASE_URL = "your_url_here"
 
     SUPABASE_KEY = "your_key_here"
