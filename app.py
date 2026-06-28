@@ -547,8 +547,9 @@ with tab9:
     )
     if "menu_items" not in st.session_state:
         st.session_state.menu_items = []
-    products_name = st.selectbox("Выберите продукт", [p[1] for p in get_products(u_id)])
-    add_button = st.button("Добавить в меню")
+    with st.form("menu_form"):
+        products_name = st.selectbox("Выберите продукт", [p[1] for p in get_products(u_id)])
+        add_button = st.form_submit_button("Добавить в меню")
     if add_button and products_name:
         st.session_state.menu_items.append({"name": products_name, "weight": 100})
     for i, item in enumerate(st.session_state.menu_items):
