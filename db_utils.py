@@ -122,7 +122,7 @@ def delete_food_entry_by_id(food_id, user_id):
         query = "DELETE FROM food_diary WHERE food_id = :food_id AND user_id = :user_id"
         execute_query(query, {"food_id": food_id, "user_id": user_id})
 
-@st.cache_data(ttl=3600)
+@st.cache_data()
 def get_products(user_id):
         query = "SELECT product_id, name, protein, fat, carbs, calories FROM products WHERE user_id = :user_id"
         products = execute_query(query, {"user_id": user_id}).fetchall()

@@ -403,6 +403,7 @@ with tab7:
                         u_id
                     )
                     st.success(f"Данные продукта '{new_name}' обновлены!")
+                    st.cache_data.clear()  # Очистка кэша после изменения данных
     elif edit_option == "Замеры":
         metrics_date = st.selectbox(
             "Выберите дату замеров для изменения:", [m[0] for m in get_body_metrics(30, u_id)]
